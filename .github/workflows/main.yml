@@ -1,0 +1,29 @@
+name: CI Kube News
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '02-kube-news/**'
+
+jobs:
+  build-and-push-docker-image:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: 02-kube-news/src
+          file: 02-kube-news/src/Dockerfile
+          push: true
+          tags: fabriciosveronez/kube-news-maratona:${{ github.run_number }}
